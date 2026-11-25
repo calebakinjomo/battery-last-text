@@ -3,7 +3,7 @@
 // Writes exactly one line (<=200 chars): the phone battery's last text
 // to the charger it waited for all day, to /output/entry.txt
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const MAX_CHARS = 200;
 
@@ -20,3 +20,8 @@ if (ENTRY.includes("\n") || ENTRY.length === 0 || ENTRY.length > MAX_CHARS) {
 
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", ENTRY + "\n", "utf8");
+
+// Verify the write: read it back and confirm it is exactly the entry.
+if (readFileSync("/output/entry.txt", "utf8") !== ENTRY + "\n") {
+  throw new Error("Write verification failed: /output/entry.txt does not match the entry");
+}
